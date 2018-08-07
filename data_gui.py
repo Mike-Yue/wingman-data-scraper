@@ -172,13 +172,11 @@ def avg_kills_deaths_per_map():
 
 	
 def kda_table():
+	retval = []
 	kda = []
-	labels = ['De_Mirage', 'De_Inferno', 'De_Nuke', 'De_Overpass', 'De_Train', 'De_Dust2', 'De_Cache']
 	mirage, inferno, nuke, overpass, train, dust2, cache = 0, 0, 0, 0, 0, 0, 0
 	mirage_kills, inferno_kills, nuke_kills, overpass_kills, train_kills, dust2_kills, cache_kills = 0, 0, 0, 0, 0, 0, 0
 	mirage_deaths, inferno_deaths, nuke_deaths, overpass_deaths, train_deaths, dust2_deaths, cache_deaths = 0, 0, 0, 0, 0, 0, 0
-	width = 0.35
-	ind = np.arange(7)
 	for match in match_list:
 		if(match.map.strip() == 'Mirage'):
 			mirage += 1
@@ -219,23 +217,10 @@ def kda_table():
 		kda.append(map_kda)
 		avg_kills[i] = round(Decimal(avg_kills[i]), 2)
 		avg_deaths[i] = round(Decimal(avg_deaths[i]), 2)
-	fig, ax = plt.subplots()
-	ax.xaxis.set_visible(False) 
-	ax.yaxis.set_visible(False)
-	ax.axis('off')
-
-	row = ('Average Kills', 'Average Deaths', 'K-D Ratio')
-
-	test_table = ax.table(cellText = [avg_kills, avg_deaths, kda],
-							rowLabels = row,
-							colLabels = labels,
-							loc = 'center')
-	#test_table.auto_set_font_size(False)
-	#test_table.set_fontsize(10)
-	#test_table.scale(1, 3)
-	ax.autoscale_view()
-	#plt.tight_layout()
-	plt.show()
+	retval.append(avg_kills)
+	retval.append(avg_deaths)
+	retval.append(kda)
+	return retval
 
 
 def browse():
@@ -243,8 +228,9 @@ def browse():
 	csv_entry_menu.filename = filedialog.askopenfilename(initialdir = "/", title = "Select file", filetypes = (("csv files (.csv)","*.csv"),("all files","*.*")))
 	file.delete(0,END)
 	file.insert(0,csv_entry_menu.filename)
+
 def read_file():
-	global file, match_list
+	global file, match_list, file_name
 	file_name = file.get()
 
 	try:
@@ -262,6 +248,7 @@ def read_file():
 
 if __name__ == '__main__':
 	freeze_support()
+	global file_name
 	csv_entry_menu = tkinter.Tk()
 	csv_entry_menu.title("Submit Your CSV Data File")
 	csv_entry_menu.geometry("700x105")
@@ -298,7 +285,48 @@ if __name__ == '__main__':
 	if(file_name == None):
 		os._exit(-1)
 
-	kda_table()
+	action_menu = tkinter.Tk()
+	action_menu.title("View Your Stats")
+	action_menu.geometry("1280x720")
+	action_menu.resizable(False, False)
+
+	for rows in range(0, 4):
+		action_menu.rowconfigure(rows, weight = 1)
+	for cols in range(0, 8):
+		action_menu.columnconfigure(cols, weight = 1)
+
+	mirage_label = Label(action_menu, text = 'De_Mirage', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+	mirage_label.grid(row = 0,  column = 1, sticky=W+E+N+S)
+	inferno_label = Label(action_menu, text = 'De_Inferno', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+	inferno_label.grid(row = 0,  column = 2, sticky=W+E+N+S)
+	nuke_label = Label(action_menu, text = 'De_Nuke', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+	nuke_label.grid(row = 0,  column = 3, sticky=W+E+N+S)
+	overpass_label = Label(action_menu, text = 'De_Overpass', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+	overpass_label.grid(row = 0,  column = 4, sticky=W+E+N+S)
+	train_label = Label(action_menu, text = 'De_Train', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+	train_label.grid(row = 0,  column = 5, sticky=W+E+N+S)
+	dust2_label = Label(action_menu, text = 'De_Dust2', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+	dust2_label.grid(row = 0,  column = 6, sticky=W+E+N+S)
+	cache_label = Label(action_menu, text = 'De_Cache', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+	cache_label.grid(row = 0, columnspan = 5, column = 7, sticky=W+E+N+S)
+	kills_lable = Label(action_menu, text = 'Kills', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+	kills_lable.grid(row = 1, column = 0, sticky = W+E+N+S)
+	deaths_lable = Label(action_menu, text = 'Deaths', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+	deaths_lable.grid(row = 2, column = 0, sticky = W+E+N+S)
+	kda_lable = Label(action_menu, text = 'K-D Ratio', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+	kda_lable.grid(row = 3, column = 0, sticky = W+E+N+S)
+
+	kda_stats = kda_table()
+	for i in range(0, len(kda_stats[0])):
+		kill_label = Label(action_menu, text = kda_stats[0][i])
+		kill_label.grid(row = 1, column = i + 1)
+		death_label = Label(action_menu, text = kda_stats[1][i])
+		death_label.grid(row = 2, column = i + 1)
+		kd_label = Label(action_menu, text = kda_stats[2][i])
+		kd_label.grid(row = 3, column = i + 1)
+	#test_lable.grid(row = 0, column = 12)
+
+	action_menu.mainloop()
 		#avg_kills_deaths_per_map()
 		#pie_chart_maps_played()
 		#bar_graph_maps_played_vs_win_pct()
