@@ -20,3 +20,6 @@ Directions below:
  personalized stats will be created for username in matches
  
  output: out-match-type.csv
+
+# data_gui.py
+Opens a GUI that allows users to upload their csv file and view the stats breakdown
