@@ -122,7 +122,6 @@ class CSV_File_Submit_GUI:
 						match = Match(row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13], row[14])
 						match_list.append(match)
 						count += 1
-						print(count)
 					else:
 						break
 				self.stats_gui()
@@ -280,7 +279,7 @@ def bar_graph_maps_played_vs_win_pct():
 		if(dict_labels[key][1] == 0):
 			pass
 		else:
-			win_pcts.append(dict_labels[key][0]/dict_labels[key][1])
+			win_pcts.append(100 * dict_labels[key][0]/dict_labels[key][1])
 			labels.append(key)
 
 	ind = np.arange(len(labels))
@@ -401,7 +400,6 @@ def kda_table():
 		if(isinstance(avg_kills[i], str)):
 			kda.append('Map Not Played')
 		else:
-			print(avg_kills[i],avg_deaths[i])
 			map_kda = Decimal(avg_kills[i]/avg_deaths[i])
 			map_kda = round(map_kda, 2)
 			kda.append(map_kda)
