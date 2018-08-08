@@ -13,7 +13,7 @@ import os
 
 #Todo: Remove absolute file path for filedialog in tkinter
 #Todo: Comment tkinter functions
-#avg_kills_per_map and maps_played functions have division by 0 edgecases that need to be fixed
+#avg_kills_per_map and maps_played functions have division by 0 edgecases that need to be fixed ---Fixed maps_played function, need to fix avg_kills
 #Pie chart needs to account for maps that aren't played to not display them ----- DONE
 
 match_list = []
@@ -203,25 +203,18 @@ def pie_chart_maps_played():
 	mirage, inferno, nuke, overpass, train, dust2, cache = 0, 0, 0, 0, 0, 0, 0
 	for match in match_list:
 		if(match.map.strip() == 'Mirage'):
-			mirage += 1
 			labels['Mirage'] += 1
 		elif(match.map.strip() == 'Inferno'):
-			inferno += 1
 			labels['Inferno'] += 1
 		elif(match.map.strip() == 'Nuke'):
-			nuke += 1
 			labels['Nuke'] += 1
 		elif(match.map.strip() == 'Overpass'):
-			overpass += 1
 			labels['Overpass'] += 1
 		elif(match.map.strip() == 'Train'):
-			train += 1
 			labels['Train'] += 1
 		elif(match.map.strip() == 'Dust II'):
-			dust2 += 1
 			labels['Dust II'] += 1
 		elif(match.map.strip() == 'Cache'):
-			cache += 1
 			labels['Cache'] += 1
 		else:
 			pass
@@ -229,62 +222,68 @@ def pie_chart_maps_played():
 	sizes = []
 	sorted_label_list = []
 	fig1, ax1 = plt.subplots()
-	label_list = list(labels.keys())
-	for key in label_list:
+
+	for key in list(labels.keys()):
 		if(labels[key] == 0):
 			pass
 		else:
 			sizes.append(labels[key])
 			sorted_label_list.append(key)
 
-
-	print(label_list)
-	print(sizes)
 	ax1.pie(sizes, labels = sorted_label_list, autopct='%1.1f%%')
 	ax1.axis('equal')
 	plt.title('Maps Played Distribution')
 	plt.show()
 
 def bar_graph_maps_played_vs_win_pct():
-	labels = ['De_Mirage', 'De_Inferno', 'De_Nuke', 'De_Overpass', 'De_Train', 'De_Dust2', 'De_Cache']
-	mirage, inferno, nuke, overpass, train, dust2, cache = 0, 0, 0, 0, 0, 0, 0
-	mirage_win, inferno_win, nuke_win, overpass_win, train_win, dust2_win, cache_win = 0, 0, 0, 0, 0, 0, 0
+
+	#First element of the list is the counter for wins, the next is counter for total games played
+	dict_labels = {'De_Mirage': [0, 0], 'De_Inferno': [0, 0], 'De_Nuke': [0, 0], 'De_Overpass': [0, 0], 'De_Train': [0, 0], 'De_Dust II': [0, 0], 'De_Cache': [0, 0]}
 
 	width = 0.6
-	ind = np.arange(7)
 	for match in match_list:
 		if(match.map.strip() == 'Mirage'):
-			mirage += 1
+			dict_labels['De_Mirage'][1] += 1
 			if(int(match.rounds_for) > int(match.rounds_against)):
-				mirage_win += 1
+				dict_labels['De_Mirage'][0] += 1
 		elif(match.map.strip() == 'Inferno'):
-			inferno += 1
+			dict_labels['De_Inferno'][1] += 1
 			if(int(match.rounds_for) > int(match.rounds_against)):
-				inferno_win += 1
+				dict_labels['De_Inferno'][0] += 1
 		elif(match.map.strip() == 'Nuke'):
-			nuke += 1
+			dict_labels['De_Nuke'][1] += 1
 			if(int(match.rounds_for) > int(match.rounds_against)):
-				nuke_win += 1
+				dict_labels['De_Nuke'][0] += 1
 		elif(match.map.strip() == 'Overpass'):
-			overpass += 1
+			dict_labels['De_Overpass'][1] += 1
 			if(int(match.rounds_for) > int(match.rounds_against)):
-				overpass_win += 1
+				dict_labels['De_Overpass'][0] += 1
 		elif(match.map.strip() == 'Train'):
-			train += 1
+			dict_labels['De_Train'][1] += 1
 			if(int(match.rounds_for) > int(match.rounds_against)):
-				train_win += 1
+				dict_labels['De_Train'][0] += 1
 		elif(match.map.strip() == 'Dust II'):
-			dust2 += 1
+			dict_labels['De_Dust II'][1] += 1
 			if(int(match.rounds_for) > int(match.rounds_against)):
-				dust2_win += 1
+				dict_labels['De_Dust II'][0] += 1
 		elif(match.map.strip() == 'Cache'):
-			cache += 1
+			dict_labels['De_Cache'][1] += 1
 			if(int(match.rounds_for) > int(match.rounds_against)):
-				cache_win += 1
+				dict_labels['De_Cache'][0] += 1
 		else:
 			pass
+
 	fig, ax = plt.subplots()
-	win_pcts = [100*mirage_win/mirage, 100*inferno_win/inferno, 100*nuke_win/nuke, 100*overpass_win/overpass, 100*train_win/train, 100*dust2_win/dust2, 100*cache_win/cache]
+	win_pcts = []
+	labels = []
+	for key in list(dict_labels.keys()):
+		if(dict_labels[key][1] == 0):
+			pass
+		else:
+			win_pcts.append(dict_labels[key][0]/dict_labels[key][1])
+			labels.append(key)
+
+	ind = np.arange(len(labels))
 	p2 = ax.bar(ind + width / 2, win_pcts, width, color = 'b')
 	ax.set_xticks(ind + width / 2)
 	ax.set_xticklabels(labels)
