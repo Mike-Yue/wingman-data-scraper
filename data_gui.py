@@ -11,6 +11,9 @@ from tkinter import filedialog
 from multiprocessing import freeze_support
 import os
 
+#Todo: Remove absolute file path for filedialog in tkinter
+#Todo: Comment tkinter functions
+
 match_list = []
 
 #########################################################################
@@ -73,6 +76,7 @@ class CSV_File_Submit_GUI:
 
 		self.file = Entry(master, font = 'Helvetica 10', bd = 4)
 		self.file.grid(row = 1, column = 0, columnspan = 2, ipady = 2, ipadx = 2, sticky=W+E+N+S)
+
 		self.browse_files = Button(master, text = 'Browse Files', command = self.browse,
 									  relief = 'ridge', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
 		self.browse_files.grid(row = 2, column = 0, columnspan = 1, sticky=W+E+N+S)
@@ -86,17 +90,39 @@ class CSV_File_Submit_GUI:
 		self.master.filename = filedialog.askopenfilename(initialdir = "C:/Users/Mike/Documents/wingman-data-scraper", title = "Select file", filetypes = (("csv files (.csv)","*.csv"),("all files","*.*")))
 		self.file.delete(0,END)
 		self.file.insert(0, self.master.filename)
+		self.counter = 0
+		try:
+			with open(self.file.get(), 'r') as data_file:
+				csv_data = csv.reader(data_file)
+				next(csv_data)
+				for row in csv_data:
+					self.counter += 1
+
+			self.master.geometry('700x180')
+			self.slider_label = Label(self.master, text = 'Choose how many matches to read from, starting from your most recent match', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+			self.slider_label.grid(row = 3, column = 0, columnspan = 2, sticky=W+E+N+S)
+			self.match_slider = Scale(self.master, from_ = 1, to = self.counter, orient = HORIZONTAL)
+			self.match_slider.grid(row = 4, column = 0, columnspan = 2, sticky=W+E+N+S)
+
+		except (IOError, FileNotFoundError) as e:
+			print("Invalid File")
 
 	def read_file(self):
 		self.file_name = self.file.get()
-
+		count = 0
+		self.counter = self.match_slider.get()
 		try:
 			with open(self.file_name, 'r') as data_file:
 				csv_data = csv.reader(data_file)
 				next(csv_data)
 				for row in csv_data:
-					match = Match(row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13], row[14])
-					match_list.append(match)
+					if(count < self.counter):
+						match = Match(row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13], row[14])
+						match_list.append(match)
+						count += 1
+						print(count)
+					else:
+						break
 				self.stats_gui()
 
 		except (IOError, FileNotFoundError) as e:
@@ -110,14 +136,16 @@ class CSV_File_Submit_GUI:
 		self.file.grid_forget()
 		self.browse_files.grid_forget()
 		self.submit_file.grid_forget()
+		self.slider_label.grid_forget()
+		self.match_slider.grid_forget()
 
 		for rows in range(0, 4):
 			self.master.rowconfigure(rows, weight = 1)
 		for cols in range(0, 8):
 			self.master.columnconfigure(cols, weight = 1)
 
-		self.csv_caption = Label(self.master, text = '', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
-		self.csv_caption.grid(row = 0, column = 0, columnspan = 2, sticky=W+E+N+S)
+		self.csv_caption = Label(self.master, text = 'Last ' + str(self.counter) + ' Matches', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+		self.csv_caption.grid(row = 0, column = 0, columnspan = 1, sticky=W+E+N+S)
 
 		self.mirage_label = Label(self.master, text = 'De_Mirage', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
 		self.mirage_label.grid(row = 0,  column = 1, sticky=W+E+N+S)
@@ -277,7 +305,14 @@ def avg_kills_deaths_per_map():
 	fig.autofmt_xdate()
 	plt.show()
 
-	
+
+#If maps played count y is 0, then return a string instead of undefined 
+def safe_division(x, y):
+	if(y == 0):
+		return 'Map Not Played'
+	else:
+		return x/y
+
 def kda_table():
 	retval = []
 	kda = []
@@ -316,14 +351,22 @@ def kda_table():
 		else:
 			pass
 
-	avg_kills = [mirage_kills/mirage, inferno_kills/inferno, nuke_kills/nuke, overpass_kills/overpass, train_kills/train, dust2_kills/dust2, cache_kills/cache]
-	avg_deaths = [mirage_deaths/mirage, inferno_deaths/inferno, nuke_deaths/nuke, overpass_deaths/overpass, train_deaths/train, dust2_deaths/dust2, cache_deaths/cache]
+	avg_kills = [safe_division(mirage_kills,mirage), safe_division(inferno_kills, inferno), safe_division(nuke_kills,nuke), safe_division(overpass_kills,overpass), 
+				 safe_division(train_kills,train), safe_division(dust2_kills, dust2), safe_division(cache_kills, cache)]
+	avg_deaths = [safe_division(mirage_deaths,mirage), safe_division(inferno_deaths, inferno), safe_division(nuke_deaths,nuke), safe_division(overpass_deaths,overpass), 
+				  safe_division(train_deaths,train), safe_division(dust2_deaths,dust2), safe_division(cache_deaths,cache)]
+
 	for i in range(0, len(avg_deaths)):
-		map_kda = Decimal(avg_kills[i]/avg_deaths[i])
-		map_kda = round(map_kda, 2)
-		kda.append(map_kda)
-		avg_kills[i] = round(Decimal(avg_kills[i]), 2)
-		avg_deaths[i] = round(Decimal(avg_deaths[i]), 2)
+
+		if(isinstance(avg_kills[i], str)):
+			kda.append('Map Not Played')
+		else:
+			print(avg_kills[i],avg_deaths[i])
+			map_kda = Decimal(avg_kills[i]/avg_deaths[i])
+			map_kda = round(map_kda, 2)
+			kda.append(map_kda)
+			avg_kills[i] = round(Decimal(avg_kills[i]), 2)
+			avg_deaths[i] = round(Decimal(avg_deaths[i]), 2)
 	retval.append(avg_kills)
 	retval.append(avg_deaths)
 	retval.append(kda)
