@@ -14,7 +14,7 @@ import os
 #Todo: Remove absolute file path for filedialog in tkinter
 #Todo: Comment tkinter functions
 #avg_kills_per_map and maps_played functions have division by 0 edgecases that need to be fixed
-#Pie chart needs to account for maps that aren't played to not display them
+#Pie chart needs to account for maps that aren't played to not display them ----- DONE
 
 match_list = []
 
@@ -198,28 +198,49 @@ class CSV_File_Submit_GUI:
 
 
 def pie_chart_maps_played():
-	labels = ['De_Mirage', 'De_Inferno', 'De_Nuke', 'De_Overpass', 'De_Train', 'De_Dust2', 'De_Cache']
+	labels = {'Mirage': 0, 'Inferno': 0, 'Nuke': 0, 'Overpass': 0, 'Train': 0, 'Dust II': 0, 'Cache': 0}
+	#labels = ['De_Mirage', 'De_Inferno', 'De_Nuke', 'De_Overpass', 'De_Train', 'De_Dust2', 'De_Cache']
 	mirage, inferno, nuke, overpass, train, dust2, cache = 0, 0, 0, 0, 0, 0, 0
 	for match in match_list:
 		if(match.map.strip() == 'Mirage'):
 			mirage += 1
+			labels['Mirage'] += 1
 		elif(match.map.strip() == 'Inferno'):
 			inferno += 1
+			labels['Inferno'] += 1
 		elif(match.map.strip() == 'Nuke'):
 			nuke += 1
+			labels['Nuke'] += 1
 		elif(match.map.strip() == 'Overpass'):
 			overpass += 1
+			labels['Overpass'] += 1
 		elif(match.map.strip() == 'Train'):
 			train += 1
+			labels['Train'] += 1
 		elif(match.map.strip() == 'Dust II'):
 			dust2 += 1
+			labels['Dust II'] += 1
 		elif(match.map.strip() == 'Cache'):
 			cache += 1
+			labels['Cache'] += 1
 		else:
 			pass
-	sizes = [mirage, inferno, nuke, overpass, train, dust2, cache]
+
+	sizes = []
+	sorted_label_list = []
 	fig1, ax1 = plt.subplots()
-	ax1.pie(sizes, labels = labels, autopct='%1.1f%%')
+	label_list = list(labels.keys())
+	for key in label_list:
+		if(labels[key] == 0):
+			pass
+		else:
+			sizes.append(labels[key])
+			sorted_label_list.append(key)
+
+
+	print(label_list)
+	print(sizes)
+	ax1.pie(sizes, labels = sorted_label_list, autopct='%1.1f%%')
 	ax1.axis('equal')
 	plt.title('Maps Played Distribution')
 	plt.show()
