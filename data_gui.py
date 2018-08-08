@@ -13,6 +13,8 @@ import os
 
 #Todo: Remove absolute file path for filedialog in tkinter
 #Todo: Comment tkinter functions
+#avg_kills_per_map and maps_played functions have division by 0 edgecases that need to be fixed
+#Pie chart needs to account for maps that aren't played to not display them
 
 match_list = []
 
@@ -131,7 +133,7 @@ class CSV_File_Submit_GUI:
 
 	def stats_gui(self):
 		self.master.title("View Your Stats")
-		self.master.geometry("1000x250")
+		self.master.geometry("1000x400")
 		self.csv_caption.grid_forget()
 		self.file.grid_forget()
 		self.browse_files.grid_forget()
@@ -139,7 +141,7 @@ class CSV_File_Submit_GUI:
 		self.slider_label.grid_forget()
 		self.match_slider.grid_forget()
 
-		for rows in range(0, 4):
+		for rows in range(0, 7):
 			self.master.rowconfigure(rows, weight = 1)
 		for cols in range(0, 8):
 			self.master.columnconfigure(cols, weight = 1)
@@ -160,15 +162,20 @@ class CSV_File_Submit_GUI:
 		self.dust2_label = Label(self.master, text = 'De_Dust2', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
 		self.dust2_label.grid(row = 0,  column = 6, sticky=W+E+N+S)
 		self.cache_label = Label(self.master, text = 'De_Cache', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
-		self.cache_label.grid(row = 0, columnspan = 5, column = 7, sticky=W+E+N+S)
+		self.cache_label.grid(row = 0, column = 7, sticky=W+E+N+S)
 		self.kills_label = Label(self.master, text = 'Average Kills', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
 		self.kills_label.grid(row = 1, column = 0, sticky = W+E+N+S)
 		self.deaths_label = Label(self.master, text = 'Average Deaths', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
 		self.deaths_label.grid(row = 2, column = 0, sticky = W+E+N+S)
 		self.kda_label = Label(self.master, text = 'K-D Ratio', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
 		self.kda_label.grid(row = 3, column = 0, sticky = W+E+N+S)
+		self.map_played_num_label = Label(self.master, text = 'Map Occurence', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+		self.map_played_num_label.grid(row = 4, column = 0, sticky = W+E+N+S)
+		self.button_label = Label(self.master, text = 'Data Visualization Options', bg = '#1A39B1', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+		self.button_label.grid(row=5, column = 0, columnspan = 8, sticky=W+E+N+S)
 
 		kda_stats = kda_table()
+		button_text = ['Maps Played Chart', 'Map Win %', 'Average K-D Per Map', 'a', 'b', 'c', 'd']
 
 		for i in range(0, len(kda_stats[0])):
 			kill_label = Label(self.master, text = kda_stats[0][i], font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
@@ -177,7 +184,16 @@ class CSV_File_Submit_GUI:
 			death_label.grid(row = 2, column = i + 1, sticky=W+E+N+S)
 			kd_label = Label(self.master, text = kda_stats[2][i], font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
 			kd_label.grid(row = 3, column = i + 1, sticky=W+E+N+S)
+			map_played_label = Label(self.master, text = kda_stats[3][i], font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+			map_played_label.grid(row = 4, column = i + 1, sticky=W+E+N+S)
 
+		self.pie_button = Button(self.master, text = 'Pie Chart: Maps Played Distribution', command = pie_chart_maps_played,
+									 relief = 'raised', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
+		self.pie_button.grid(row = 6, column = 0, columnspan = 4, sticky=W+E+N+S)
+
+		self.map_win_pct_button = Button(self.master, text = 'Bar Graph: Map Win Percentage', command = bar_graph_maps_played_vs_win_pct,
+									 relief = 'raised', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
+		self.map_win_pct_button.grid(row = 6, column = 4, columnspan = 4, sticky=W+E+N+S)
 
 
 
@@ -205,6 +221,7 @@ def pie_chart_maps_played():
 	fig1, ax1 = plt.subplots()
 	ax1.pie(sizes, labels = labels, autopct='%1.1f%%')
 	ax1.axis('equal')
+	plt.title('Maps Played Distribution')
 	plt.show()
 
 def bar_graph_maps_played_vs_win_pct():
@@ -253,6 +270,9 @@ def bar_graph_maps_played_vs_win_pct():
 	ax.autoscale_view()
 	fig.autofmt_xdate()
 	#plt.bar(labels, map_pcts, width = ind_width)
+	plt.title('Map Win Percentage Comparison')
+	plt.xlabel('Maps')
+	plt.ylabel('Win Percentage')
 	plt.show()
 
 def avg_kills_deaths_per_map():
@@ -370,6 +390,7 @@ def kda_table():
 	retval.append(avg_kills)
 	retval.append(avg_deaths)
 	retval.append(kda)
+	retval.append([mirage, inferno, nuke, overpass, train, dust2, cache])
 	return retval
 
 
@@ -379,17 +400,5 @@ if __name__ == '__main__':
 	root = Tk()
 	test_gui = CSV_File_Submit_GUI(root)
 	root.mainloop()
-
-	'''try:
-		file_name
-	except NameError:
-		os._exit(-1)
-	if(file_name == None):
-		os._exit(-1)'''
-
-
-		#avg_kills_deaths_per_map()
-		#pie_chart_maps_played()
-		#bar_graph_maps_played_vs_win_pct()
 
 
