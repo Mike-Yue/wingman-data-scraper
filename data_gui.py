@@ -5,6 +5,7 @@ from decimal import Decimal
 import threading
 import tkinter
 from tkinter import *
+from tkinter import Tk
 from tkinter import ttk
 from tkinter import filedialog
 from multiprocessing import freeze_support
@@ -12,6 +13,13 @@ import os
 
 match_list = []
 
+#########################################################################
+#                                                                       #
+#                                                                       #
+#    CLASS DECLARATIONS ---> HUGE CHUNKS OF CODE                        #
+#                                                                       #
+#                                                                       #
+#########################################################################
 class Match:
 	def __init__(
 		self,
@@ -45,6 +53,105 @@ class Match:
 		self.score = score
 		self.rounds_for = rounds_for
 		self.rounds_against = rounds_against
+
+class CSV_File_Submit_GUI:
+	def __init__(self, master):
+		self.master = master
+		master.title('Submit CSV File')
+		master.geometry('700x105')
+		master.resizable(False, False)
+
+		master.rowconfigure(0, weight = 2)
+		master.rowconfigure(1, weight = 1)
+		master.rowconfigure(2, weight = 2)
+		master.columnconfigure(0, weight = 1)
+		master.columnconfigure(1, weight = 1)
+		self.file_name = None
+		self.csv_caption = Label(master, text = 'Select your csv file by either typing in the path or using Browse Files', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+		self.csv_caption.grid(row = 0, column = 0, columnspan = 2, sticky=W+E+N+S)
+
+
+		self.file = Entry(master, font = 'Helvetica 10', bd = 4)
+		self.file.grid(row = 1, column = 0, columnspan = 2, ipady = 2, ipadx = 2, sticky=W+E+N+S)
+		self.browse_files = Button(master, text = 'Browse Files', command = self.browse,
+									  relief = 'ridge', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
+		self.browse_files.grid(row = 2, column = 0, columnspan = 1, sticky=W+E+N+S)
+
+		self.submit_file = Button(master, text = 'Submit File', command = self.read_file,
+									 relief = 'ridge', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
+		self.submit_file.grid(row = 2, column = 1, columnspan = 1, sticky=W+E+N+S)
+
+	def browse(self):
+		#global csv_entry_menu, file
+		self.master.filename = filedialog.askopenfilename(initialdir = "C:/Users/Mike/Documents/wingman-data-scraper", title = "Select file", filetypes = (("csv files (.csv)","*.csv"),("all files","*.*")))
+		self.file.delete(0,END)
+		self.file.insert(0, self.master.filename)
+
+	def read_file(self):
+		self.file_name = self.file.get()
+
+		try:
+			with open(self.file_name, 'r') as data_file:
+				csv_data = csv.reader(data_file)
+				next(csv_data)
+				for row in csv_data:
+					match = Match(row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13], row[14])
+					match_list.append(match)
+				self.stats_gui()
+
+		except (IOError, FileNotFoundError) as e:
+			self.file_name = None
+			print(e)
+
+	def stats_gui(self):
+		self.master.title("View Your Stats")
+		self.master.geometry("1000x250")
+		self.csv_caption.grid_forget()
+		self.file.grid_forget()
+		self.browse_files.grid_forget()
+		self.submit_file.grid_forget()
+
+		for rows in range(0, 4):
+			self.master.rowconfigure(rows, weight = 1)
+		for cols in range(0, 8):
+			self.master.columnconfigure(cols, weight = 1)
+
+		self.csv_caption = Label(self.master, text = '', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+		self.csv_caption.grid(row = 0, column = 0, columnspan = 2, sticky=W+E+N+S)
+
+		self.mirage_label = Label(self.master, text = 'De_Mirage', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+		self.mirage_label.grid(row = 0,  column = 1, sticky=W+E+N+S)
+		self.inferno_label = Label(self.master, text = 'De_Inferno', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+		self.inferno_label.grid(row = 0,  column = 2, sticky=W+E+N+S)
+		self.nuke_label = Label(self.master, text = 'De_Nuke', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+		self.nuke_label.grid(row = 0,  column = 3, sticky=W+E+N+S)
+		self.overpass_label = Label(self.master, text = 'De_Overpass', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+		self.overpass_label.grid(row = 0,  column = 4, sticky=W+E+N+S)
+		self.train_label = Label(self.master, text = 'De_Train', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+		self.train_label.grid(row = 0,  column = 5, sticky=W+E+N+S)
+		self.dust2_label = Label(self.master, text = 'De_Dust2', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+		self.dust2_label.grid(row = 0,  column = 6, sticky=W+E+N+S)
+		self.cache_label = Label(self.master, text = 'De_Cache', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+		self.cache_label.grid(row = 0, columnspan = 5, column = 7, sticky=W+E+N+S)
+		self.kills_label = Label(self.master, text = 'Average Kills', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+		self.kills_label.grid(row = 1, column = 0, sticky = W+E+N+S)
+		self.deaths_label = Label(self.master, text = 'Average Deaths', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+		self.deaths_label.grid(row = 2, column = 0, sticky = W+E+N+S)
+		self.kda_label = Label(self.master, text = 'K-D Ratio', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+		self.kda_label.grid(row = 3, column = 0, sticky = W+E+N+S)
+
+		kda_stats = kda_table()
+
+		for i in range(0, len(kda_stats[0])):
+			kill_label = Label(self.master, text = kda_stats[0][i], font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+			kill_label.grid(row = 1, column = i + 1, sticky=W+E+N+S)
+			death_label = Label(self.master, text = kda_stats[1][i], font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+			death_label.grid(row = 2, column = i + 1, sticky=W+E+N+S)
+			kd_label = Label(self.master, text = kda_stats[2][i], font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+			kd_label.grid(row = 3, column = i + 1, sticky=W+E+N+S)
+
+
+
 
 def pie_chart_maps_played():
 	labels = ['De_Mirage', 'De_Inferno', 'De_Nuke', 'De_Overpass', 'De_Train', 'De_Dust2', 'De_Cache']
@@ -223,110 +330,21 @@ def kda_table():
 	return retval
 
 
-def browse():
-	global csv_entry_menu, file
-	csv_entry_menu.filename = filedialog.askopenfilename(initialdir = "/", title = "Select file", filetypes = (("csv files (.csv)","*.csv"),("all files","*.*")))
-	file.delete(0,END)
-	file.insert(0,csv_entry_menu.filename)
-
-def read_file():
-	global file, match_list, file_name
-	file_name = file.get()
-
-	try:
-		with open(file_name, 'r') as data_file:
-			csv_data = csv.reader(data_file)
-			next(csv_data)
-			for row in csv_data:
-				match = Match(row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13], row[14])
-				match_list.append(match)
-			csv_entry_menu.destroy()
-
-	except (IOError, FileNotFoundError) as e:
-		file_name = None
-		print(e)
-
 if __name__ == '__main__':
 	freeze_support()
 	global file_name
-	csv_entry_menu = tkinter.Tk()
-	csv_entry_menu.title("Submit Your CSV Data File")
-	csv_entry_menu.geometry("700x105")
-	csv_entry_menu.resizable(False, False)
+	root = Tk()
+	test_gui = CSV_File_Submit_GUI(root)
+	root.mainloop()
 
-	csv_entry_menu.rowconfigure(0, weight = 2)
-	csv_entry_menu.rowconfigure(1, weight = 1)
-	csv_entry_menu.rowconfigure(2, weight = 2)
-	csv_entry_menu.columnconfigure(0, weight = 1)
-	csv_entry_menu.columnconfigure(1, weight = 1)
-
-
-	csv_caption = Label(csv_entry_menu, text = 'Select your csv file by either typing in the path or using Browse Files', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
-	csv_caption.grid(row = 0, column = 0, columnspan = 2, sticky=W+E+N+S)
-
-
-	file = Entry(csv_entry_menu, font = 'Helvetica 10', bd = 4)
-	file.grid(row = 1, column = 0, columnspan = 2, ipady = 2, ipadx = 2, sticky=W+E+N+S)
-
-	browse_files = tkinter.Button(csv_entry_menu, text = 'Browse Files', command = browse,
-								  relief = 'ridge', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
-	browse_files.grid(row = 2, column = 0, columnspan = 1, sticky=W+E+N+S)
-
-	submit_file = tkinter.Button(csv_entry_menu, text = 'Submit File', command = read_file,
-								 relief = 'ridge', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
-	submit_file.grid(row = 2, column = 1, columnspan = 1, sticky=W+E+N+S)
-
-	csv_entry_menu.mainloop()
-
-	try:
+	'''try:
 		file_name
 	except NameError:
 		os._exit(-1)
 	if(file_name == None):
-		os._exit(-1)
+		os._exit(-1)'''
 
-	action_menu = tkinter.Tk()
-	action_menu.title("View Your Stats")
-	action_menu.geometry("1280x720")
-	action_menu.resizable(False, False)
 
-	for rows in range(0, 4):
-		action_menu.rowconfigure(rows, weight = 1)
-	for cols in range(0, 8):
-		action_menu.columnconfigure(cols, weight = 1)
-
-	mirage_label = Label(action_menu, text = 'De_Mirage', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
-	mirage_label.grid(row = 0,  column = 1, sticky=W+E+N+S)
-	inferno_label = Label(action_menu, text = 'De_Inferno', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
-	inferno_label.grid(row = 0,  column = 2, sticky=W+E+N+S)
-	nuke_label = Label(action_menu, text = 'De_Nuke', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
-	nuke_label.grid(row = 0,  column = 3, sticky=W+E+N+S)
-	overpass_label = Label(action_menu, text = 'De_Overpass', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
-	overpass_label.grid(row = 0,  column = 4, sticky=W+E+N+S)
-	train_label = Label(action_menu, text = 'De_Train', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
-	train_label.grid(row = 0,  column = 5, sticky=W+E+N+S)
-	dust2_label = Label(action_menu, text = 'De_Dust2', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
-	dust2_label.grid(row = 0,  column = 6, sticky=W+E+N+S)
-	cache_label = Label(action_menu, text = 'De_Cache', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
-	cache_label.grid(row = 0, columnspan = 5, column = 7, sticky=W+E+N+S)
-	kills_lable = Label(action_menu, text = 'Kills', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
-	kills_lable.grid(row = 1, column = 0, sticky = W+E+N+S)
-	deaths_lable = Label(action_menu, text = 'Deaths', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
-	deaths_lable.grid(row = 2, column = 0, sticky = W+E+N+S)
-	kda_lable = Label(action_menu, text = 'K-D Ratio', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
-	kda_lable.grid(row = 3, column = 0, sticky = W+E+N+S)
-
-	kda_stats = kda_table()
-	for i in range(0, len(kda_stats[0])):
-		kill_label = Label(action_menu, text = kda_stats[0][i])
-		kill_label.grid(row = 1, column = i + 1)
-		death_label = Label(action_menu, text = kda_stats[1][i])
-		death_label.grid(row = 2, column = i + 1)
-		kd_label = Label(action_menu, text = kda_stats[2][i])
-		kd_label.grid(row = 3, column = i + 1)
-	#test_lable.grid(row = 0, column = 12)
-
-	action_menu.mainloop()
 		#avg_kills_deaths_per_map()
 		#pie_chart_maps_played()
 		#bar_graph_maps_played_vs_win_pct()
