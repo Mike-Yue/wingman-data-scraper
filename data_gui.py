@@ -133,7 +133,7 @@ class CSV_File_Submit_GUI:
 
 	def stats_gui(self):
 		self.master.title("View Your Stats")
-		self.master.geometry("1000x450")
+		self.master.geometry("1280x450")
 		self.csv_caption.grid_forget()
 		self.file.grid_forget()
 		self.browse_files.grid_forget()
@@ -149,7 +149,7 @@ class CSV_File_Submit_GUI:
 			self.master.columnconfigure(cols, weight = 1)
 
 		#Procedurally generates the captions at the top row of the table
-		horizontal_labels = ['Last ' + str(self.counter) + ' Matches', 'De_Mirage', 'De_Inferno', 'De_Nuke', 'De_Overpass', 'De_Train', 'De_Dust II', 'De_Cache']
+		horizontal_labels = ['Last ' + str(self.counter) + ' Matches', ' De_Mirage ', 'De_Inferno', '  De_Nuke  ', 'De_Overpass', ' De_Train ', 'De_Dust II', ' De_Cache ']
 		counter = 0
 		for label in horizontal_labels:
 			caption = Label(self.master, text = label, bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
@@ -157,7 +157,7 @@ class CSV_File_Submit_GUI:
 			counter += 1
 
 		#Procedurally generates the captions at the first column of the table, skipping the first one because it was generated in the previous lines
-		vertical_labels = ['Average Kills', 'Average Deaths', 'K-D Ratio', 'Map Played Frequency', 'Map Winrate %', 'Average Headshot %', 'Average MVPs Per Game']
+		vertical_labels = ['Average Kills', 'Average Deaths', 'K-D Ratio', 'Map Played Frequency', 'Map Winrate %', 'Average Headshot %', 'Average MVPs/Game']
 		counter = 1
 		for label in vertical_labels:
 			caption = Label(self.master, text = label, bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
@@ -178,7 +178,7 @@ class CSV_File_Submit_GUI:
 				kd_label.grid(row = 3, column = i + 1, sticky=W+E+N+S)
 				map_played_label = Label(self.master, text = '0', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
 				map_played_label.grid(row = 4, column = i + 1, sticky=W+E+N+S)
-				winrate_label = Label(self.master, text = '0', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+				winrate_label = Label(self.master, text = '-', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
 				winrate_label.grid(row = 5, column = i + 1, sticky=W+E+N+S)
 				hsp_label = Label(self.master, text = '-', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
 				hsp_label.grid(row = 6, column = i + 1, sticky=W+E+N+S)
@@ -208,13 +208,17 @@ class CSV_File_Submit_GUI:
 									 relief = 'raised', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
 		self.pie_button.grid(row = 9, column = 0, columnspan = 2, sticky=W+E+N+S)
 
-		self.map_win_pct_button = Button(self.master, text = 'Bar Graph: Map Win Percentage', command = lambda: bar_graph_maps_win_pct(all_match_stats),
+		self.map_win_pct_button = Button(self.master, text = 'Bar Graph: Map Winrate %', command = lambda: bar_graph_maps_win_pct(all_match_stats),
 									 relief = 'raised', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
 		self.map_win_pct_button.grid(row = 9, column = 2, columnspan = 2, sticky=W+E+N+S)
 
-		self.avg_kills_and_deaths_button = Button(self.master, text = 'Bar Graph: Average Kills vs Deaths Per Map', command = lambda: avg_kills_deaths_per_map(all_match_stats),
+		self.avg_kills_and_deaths_button = Button(self.master, text = 'Bar Graph: Average K-D Per Map', command = lambda: avg_kills_deaths_per_map(all_match_stats),
 									 				relief = 'raised', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
-		self.avg_kills_and_deaths_button.grid(row = 9, column = 4, columnspan = 4, sticky=W+E+N+S)
+		self.avg_kills_and_deaths_button.grid(row = 9, column = 4, columnspan = 2, sticky=W+E+N+S)
+
+		self.avg_hsp_button = Button(self.master, text = 'Bar Graph: Average HS % Per Map', command = lambda: avg_hsp_per_map(all_match_stats),
+									 				relief = 'raised', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
+		self.avg_hsp_button.grid(row = 9, column = 6, columnspan = 2, sticky=W+E+N+S)
 
 
 def pie_chart_maps_played(all_match_stats):
@@ -243,7 +247,6 @@ def bar_graph_maps_win_pct(all_match_stats):
 		if(all_match_stats[key]['Matches Played'] == '0' or all_match_stats[key]['Matches Played'] == '-' ):
 			pass
 		else:
-			print(all_match_stats[key]['Wins'], all_match_stats[key]['Matches Played'])
 			win_pcts.append(100 * all_match_stats[key]['Wins']/all_match_stats[key]['Matches Played'])
 			labels.append(key)
 
@@ -284,6 +287,31 @@ def avg_kills_deaths_per_map(all_match_stats):
 	ax.autoscale_view()
 	fig.autofmt_xdate()
 	plt.show()
+
+def avg_hsp_per_map(all_match_stats):
+	width = 0.6
+	fig, ax = plt.subplots()
+	hsp_pcts = []
+	labels = []
+	for key in list(all_match_stats.keys()):
+		if(all_match_stats[key]['Matches Played'] == '0' or all_match_stats[key]['Matches Played'] == '-' ):
+			pass
+		else:
+			hsp_pcts.append(100*all_match_stats[key]['Headshot Kills']/all_match_stats[key]['Total Kills'])
+			labels.append(key)
+
+	ind = np.arange(len(labels))
+	p2 = ax.bar(ind + width / 2, hsp_pcts, width, color = 'b')
+	ax.set_xticks(ind + width / 2)
+	ax.set_xticklabels(labels)
+	ax.autoscale_view()
+	fig.autofmt_xdate()
+	#plt.bar(labels, map_pcts, width = ind_width)
+	plt.title('Map Headshot Percentage Comparison')
+	plt.xlabel('Maps')
+	plt.ylabel('Headshot Percentage')
+	plt.show()
+
 
 
 #If maps played count y is 0, then return a string instead of undefined 
