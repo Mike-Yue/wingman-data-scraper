@@ -223,7 +223,7 @@ def pie_chart_maps_played(all_match_stats):
 	fig1, ax1 = plt.subplots()
 
 	for key in list(all_match_stats.keys()):
-		if(all_match_stats[key]['Matches Played'] == 0):
+		if(all_match_stats[key]['Matches Played'] == '0' or all_match_stats[key]['Matches Played'] == '-'):
 			pass
 		else:
 			sizes.append(all_match_stats[key]['Matches Played'])
@@ -240,9 +240,10 @@ def bar_graph_maps_win_pct(all_match_stats):
 	win_pcts = []
 	labels = []
 	for key in list(all_match_stats.keys()):
-		if(all_match_stats[key]['Matches Played'] == 0):
+		if(all_match_stats[key]['Matches Played'] == '0' or all_match_stats[key]['Matches Played'] == '-' ):
 			pass
 		else:
+			print(all_match_stats[key]['Wins'], all_match_stats[key]['Matches Played'])
 			win_pcts.append(100 * all_match_stats[key]['Wins']/all_match_stats[key]['Matches Played'])
 			labels.append(key)
 
@@ -259,12 +260,12 @@ def bar_graph_maps_win_pct(all_match_stats):
 	plt.show()
 
 def avg_kills_deaths_per_map(all_match_stats):
-	width = 0.35
+	width = 0.25
 	labels_keys = []
 	avg_kills = []
 	avg_deaths = []
 	for key in list(all_match_stats.keys()):
-		if(all_match_stats[key]['Matches Played'] == 0):
+		if(all_match_stats[key]['Matches Played'] == 0 or all_match_stats[key]['Matches Played'] == '-'):
 			pass
 		else:
 			labels_keys.append(key)
