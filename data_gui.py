@@ -88,7 +88,7 @@ class CSV_File_Submit_GUI:
 									 relief = 'ridge', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
 		self.submit_file.grid(row = 2, column = 1, columnspan = 1, sticky=W+E+N+S)
 
-	def back_to_main_menu(self, master):
+	def back_to_main_menu(self, master, all_match_stats):
 		self.remove_widgets()
 		self.master = master
 		master.title('Submit CSV File')
@@ -146,6 +146,8 @@ class CSV_File_Submit_GUI:
 			print("Invalid File")
 
 	def read_file(self):
+		#Deletes match_list first so when user goes back to main menu the match_list is reset as well
+		del match_list[:]
 		self.file_name = self.file.get()
 		count = 0
 		self.counter = self.match_slider.get()
@@ -222,11 +224,11 @@ class CSV_File_Submit_GUI:
 				death_label.grid(row = 2, column = i + 1, sticky=W+E+N+S)
 				kd_label = Label(self.master, text = str(all_match_stats[key]['KD Ratio']), font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
 				kd_label.grid(row = 3, column = i + 1, sticky=W+E+N+S)
-				map_played_label = Label(self.master, text = str(all_match_stats[key]['Matches Played']), font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+				map_played_label = Label(self.master, text = str(round(100*all_match_stats[key]['Matches Played']/self.counter, 2))+'%', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
 				map_played_label.grid(row = 4, column = i + 1, sticky=W+E+N+S)
-				winrate_label = Label(self.master, text = str(round(all_match_stats[key]['Wins']/all_match_stats[key]['Matches Played'], 2)), font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+				winrate_label = Label(self.master, text = str(round(100*all_match_stats[key]['Wins']/all_match_stats[key]['Matches Played'], 2)) + '%', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
 				winrate_label.grid(row = 5, column = i + 1, sticky=W+E+N+S)
-				hsp_label = Label(self.master, text = str(round(100*all_match_stats[key]['Headshot Kills']/all_match_stats[key]['Total Kills'], 2)), font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+				hsp_label = Label(self.master, text = str(round(100*all_match_stats[key]['Headshot Kills']/all_match_stats[key]['Total Kills'], 2)) + '%', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
 				hsp_label.grid(row = 6, column = i + 1, sticky=W+E+N+S)
 				mvp_label = Label(self.master, text =str(round(all_match_stats[key]['MVP Count']/all_match_stats[key]['Matches Played'], 2)), font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
 				mvp_label.grid(row = 7, column = i + 1, sticky=W+E+N+S)
@@ -250,14 +252,22 @@ class CSV_File_Submit_GUI:
 									 				relief = 'raised', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
 		self.avg_hsp_button.grid(row = 9, column = 6, columnspan = 2, sticky=W+E+N+S)
 
-		self.main_menu_button = Button(self.master, text = 'Back to Main Menu', command = lambda: self.back_to_main_menu(self.master),
+		self.main_menu_button = Button(self.master, text = 'Back to Main Menu', command = lambda: self.back_to_main_menu(self.master, all_match_stats),
 									 				relief = 'raised', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
 		self.main_menu_button.grid(row = 10, column = 0, columnspan = 8, sticky=W+E+N+S)
+
 
 	def remove_widgets(self):
 		for widget in self.master.grid_slaves():
 			widget.destroy()
 
+
+
+########################################
+#                                      #
+#  Function Declarations for Data Viz  #
+#                                      #
+########################################
 
 def pie_chart_maps_played(all_match_stats):
 	sizes = []
@@ -417,6 +427,8 @@ def kda_table():
 				retval[map_name]['KD Ratio'] = round(retval[map_name]['Total Kills']/retval[map_name]['Total Deaths'], 2)	
 	return retval
 
+
+#Main Loop
 
 if __name__ == '__main__':
 	freeze_support()
