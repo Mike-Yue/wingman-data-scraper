@@ -88,6 +88,41 @@ class CSV_File_Submit_GUI:
 									 relief = 'ridge', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
 		self.submit_file.grid(row = 2, column = 1, columnspan = 1, sticky=W+E+N+S)
 
+	def back_to_main_menu(self, master):
+		self.remove_widgets()
+		self.master = master
+		master.title('Submit CSV File')
+		master.geometry('700x105')
+		master.resizable(False, False)
+
+		master.rowconfigure(0, weight = 2)
+		master.rowconfigure(1, weight = 1)
+		master.rowconfigure(2, weight = 2)
+		master.columnconfigure(0, weight = 1)
+		master.columnconfigure(1, weight = 1)
+
+		#Needed to reconfigure the rows and columns to 0 weight
+		for rows in range(3, 20):
+			master.rowconfigure(rows, weight = 0)
+		for column in range(2, 20):
+			master.columnconfigure(column, weight = 0)
+
+		self.file_name = None
+		self.csv_caption = Label(master, text = 'Select your csv file by either typing in the path or using Browse Files', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+		self.csv_caption.grid(row = 0, column = 0, columnspan = 2, sticky=W+E+N+S)
+
+
+		self.file = Entry(master, font = 'Helvetica 10', bd = 4)
+		self.file.grid(row = 1, column = 0, columnspan = 2, ipady = 2, ipadx = 2, sticky=W+E+N+S)
+
+		self.browse_files = Button(master, text = 'Browse Files', command = self.browse,
+									  relief = 'ridge', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
+		self.browse_files.grid(row = 2, column = 0, columnspan = 1, sticky=W+E+N+S)
+
+		self.submit_file = Button(master, text = 'Submit File', command = self.read_file,
+									 relief = 'ridge', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
+		self.submit_file.grid(row = 2, column = 1, columnspan = 1, sticky=W+E+N+S)
+
 	def browse(self):
 		#global csv_entry_menu, file
 		self.master.filename = filedialog.askopenfilename(initialdir = "C:/Users/Mike/Documents/wingman-data-scraper", title = "Select file", filetypes = (("csv files (.csv)","*.csv"),("all files","*.*")))
@@ -134,16 +169,11 @@ class CSV_File_Submit_GUI:
 	def stats_gui(self):
 		self.master.title("View Your Stats")
 		self.master.geometry("1280x450")
-		self.csv_caption.grid_forget()
-		self.file.grid_forget()
-		self.browse_files.grid_forget()
-		self.submit_file.grid_forget()
-		self.slider_label.grid_forget()
-		self.match_slider.grid_forget()
 
+		self.remove_widgets()
 		
 
-		for rows in range(0, 10):
+		for rows in range(0, 11):
 			self.master.rowconfigure(rows, weight = 1)
 		for cols in range(0, 8):
 			self.master.columnconfigure(cols, weight = 1)
@@ -219,6 +249,14 @@ class CSV_File_Submit_GUI:
 		self.avg_hsp_button = Button(self.master, text = 'Bar Graph: Average HS % Per Map', command = lambda: avg_hsp_per_map(all_match_stats),
 									 				relief = 'raised', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
 		self.avg_hsp_button.grid(row = 9, column = 6, columnspan = 2, sticky=W+E+N+S)
+
+		self.main_menu_button = Button(self.master, text = 'Back to Main Menu', command = lambda: self.back_to_main_menu(self.master),
+									 				relief = 'raised', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
+		self.main_menu_button.grid(row = 10, column = 0, columnspan = 8, sticky=W+E+N+S)
+
+	def remove_widgets(self):
+		for widget in self.master.grid_slaves():
+			widget.destroy()
 
 
 def pie_chart_maps_played(all_match_stats):
