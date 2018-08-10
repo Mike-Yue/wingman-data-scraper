@@ -242,28 +242,35 @@ def bar_graph_maps_win_pct(all_match_stats):
 	width = 0.6
 	fig, ax = plt.subplots()
 	win_pcts = []
+	tie_pcts = []
+	loss_pcts = []
 	labels = []
 	for key in list(all_match_stats.keys()):
 		if(all_match_stats[key]['Matches Played'] == '0' or all_match_stats[key]['Matches Played'] == '-' ):
 			pass
 		else:
 			win_pcts.append(100 * all_match_stats[key]['Wins']/all_match_stats[key]['Matches Played'])
+			tie_pcts.append(100 * all_match_stats[key]['Ties']/all_match_stats[key]['Matches Played'])
+			loss_pcts.append(100 * all_match_stats[key]['Losses']/all_match_stats[key]['Matches Played'])
 			labels.append(key)
 
 	ind = np.arange(len(labels))
-	p2 = ax.bar(ind + width / 2, win_pcts, width, color = 'b')
-	ax.set_xticks(ind + width / 2)
-	ax.set_xticklabels(labels)
+	p1 = plt.bar(ind + width / 2, win_pcts, width, color = 'g')
+	p2 = plt.bar(ind + width / 2, tie_pcts, width, bottom = win_pcts, color = 'y')
+	p3 = plt.bar(ind + width / 2, loss_pcts, width, bottom = [win_pcts[i] + tie_pcts[i] for i in range(len(win_pcts))], color = 'r')
+	#ax.set_xticklabels(labels)
 	ax.autoscale_view()
 	fig.autofmt_xdate()
 	#plt.bar(labels, map_pcts, width = ind_width)
-	plt.title('Map Win Percentage Comparison')
+	plt.xticks(ind + width / 2, labels)
+	plt.legend((p1[0], p2[0], p3[0]), ('Wins', 'Ties', 'Losses'))
+	plt.title('Map Win/Tie/Loss Percentage Comparison')
 	plt.xlabel('Maps')
-	plt.ylabel('Win Percentage')
+	plt.ylabel('Percentage')
 	plt.show()
 
 def avg_kills_deaths_per_map(all_match_stats):
-	width = 0.25
+	width = 0.35
 	labels_keys = []
 	avg_kills = []
 	avg_deaths = []
@@ -278,7 +285,7 @@ def avg_kills_deaths_per_map(all_match_stats):
 	fig, ax = plt.subplots()
 	p1 = ax.bar(ind, avg_kills, width, color = 'g')
 	p2 = ax.bar(ind + width, avg_deaths, width, color = 'r')
-	ax.set_xticks(ind + width / 2)
+	ax.set_xticks(ind + width / 10)
 	ax.set_xticklabels(labels_keys)
 	plt.legend((p1[0], p2[0]), ('Kills', 'Deaths'))
 	plt.title('Kills vs Deaths Per Map Comparison')
