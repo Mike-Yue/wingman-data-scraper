@@ -63,21 +63,25 @@ class Match:
 class CSV_File_Submit_GUI:
 	def __init__(self, master):
 		self.master = master
+		self.v = IntVar()
 		master.title('Submit CSV File')
 		master.geometry('700x105')
 		master.resizable(False, False)
 
-		master.rowconfigure(0, weight = 2)
-		master.rowconfigure(1, weight = 1)
+		master.rowconfigure(0, weight = 1)
+		master.rowconfigure(1, weight = 2)
 		master.rowconfigure(2, weight = 2)
-		master.columnconfigure(0, weight = 1)
-		master.columnconfigure(1, weight = 1)
+		master.columnconfigure(0, weight = 10)
+		master.columnconfigure(1, weight = 10)
+		master.columnconfigure(2, weight = 1)
 		self.file_name = None
 		self.csv_caption = Label(master, text = 'Select your csv file by either typing in the path or using Browse Files', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
 		self.csv_caption.grid(row = 0, column = 0, columnspan = 2, sticky=W+E+N+S)
 
+		self.option_caption = Label(master, text = 'Data Type', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+		self.option_caption.grid(row = 0, column = 2, sticky=W+E+N+S)
 
-		self.file = Entry(master, font = 'Helvetica 10', bd = 4)
+		self.file = Entry(master, font = 'Helvetica 11', bd = 4)
 		self.file.grid(row = 1, column = 0, columnspan = 2, ipady = 2, ipadx = 2, sticky=W+E+N+S)
 
 		self.browse_files = Button(master, text = 'Browse Files', command = self.browse,
@@ -88,18 +92,27 @@ class CSV_File_Submit_GUI:
 									 relief = 'ridge', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
 		self.submit_file.grid(row = 2, column = 1, columnspan = 1, sticky=W+E+N+S)
 
+		self.competitive_parse = Radiobutton(master, anchor = W, padx = 20, text = 'Competitive', variable = self.v, value = 1, relief = 'groove', borderwidth = 3,
+											 bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold').grid(row = 1, rowspan = 1, column = 2, sticky=W+E+N+S)
+
+		self.wingman_parse = Radiobutton(master, anchor = W, padx = 20, text = 'Wingman', variable = self.v, value = 2, relief = 'groove', borderwidth = 3,
+											 bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold').grid(row = 2, rowspan = 1, column = 2, sticky=W+E+N+S)
+
 	def back_to_main_menu(self, master, all_match_stats):
 		self.remove_widgets()
 		self.master = master
+		self.v = IntVar()
+
 		master.title('Submit CSV File')
 		master.geometry('700x105')
 		master.resizable(False, False)
 
-		master.rowconfigure(0, weight = 2)
-		master.rowconfigure(1, weight = 1)
+		master.rowconfigure(0, weight = 1)
+		master.rowconfigure(1, weight = 2)
 		master.rowconfigure(2, weight = 2)
-		master.columnconfigure(0, weight = 1)
-		master.columnconfigure(1, weight = 1)
+		master.columnconfigure(0, weight = 10)
+		master.columnconfigure(1, weight = 10)
+		master.columnconfigure(2, weight = 1)
 
 		#Needed to reconfigure the rows and columns to 0 weight
 		for rows in range(3, 20):
@@ -111,8 +124,10 @@ class CSV_File_Submit_GUI:
 		self.csv_caption = Label(master, text = 'Select your csv file by either typing in the path or using Browse Files', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
 		self.csv_caption.grid(row = 0, column = 0, columnspan = 2, sticky=W+E+N+S)
 
+		self.option_caption = Label(master, text = 'Data Type', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+		self.option_caption.grid(row = 0, column = 2, sticky=W+E+N+S)
 
-		self.file = Entry(master, font = 'Helvetica 10', bd = 4)
+		self.file = Entry(master, font = 'Helvetica 11', bd = 4)
 		self.file.grid(row = 1, column = 0, columnspan = 2, ipady = 2, ipadx = 2, sticky=W+E+N+S)
 
 		self.browse_files = Button(master, text = 'Browse Files', command = self.browse,
@@ -122,6 +137,12 @@ class CSV_File_Submit_GUI:
 		self.submit_file = Button(master, text = 'Submit File', command = self.read_file,
 									 relief = 'ridge', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
 		self.submit_file.grid(row = 2, column = 1, columnspan = 1, sticky=W+E+N+S)
+
+		self.competitive_parse = Radiobutton(master, anchor = W, padx = 20, text = 'Competitive', variable = self.v, value = 1, relief = 'groove', borderwidth = 3,
+											 bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold').grid(row = 1, rowspan = 1, column = 2, sticky=W+E+N+S)
+
+		self.wingman_parse = Radiobutton(master, anchor = W, padx = 20, text = 'Wingman', variable = self.v, value = 2, relief = 'groove', borderwidth = 3,
+											 bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold').grid(row = 2, rowspan = 1, column = 2, sticky=W+E+N+S)
 
 	def browse(self):
 		#global csv_entry_menu, file
@@ -138,9 +159,9 @@ class CSV_File_Submit_GUI:
 
 			self.master.geometry('700x180')
 			self.slider_label = Label(self.master, text = 'Choose how many matches to read from, starting from your most recent match', bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
-			self.slider_label.grid(row = 3, column = 0, columnspan = 2, sticky=W+E+N+S)
+			self.slider_label.grid(row = 3, column = 0, columnspan = 3, sticky=W+E+N+S)
 			self.match_slider = Scale(self.master, from_ = 1, to = self.counter, orient = HORIZONTAL)
-			self.match_slider.grid(row = 4, column = 0, columnspan = 2, sticky=W+E+N+S)
+			self.match_slider.grid(row = 4, column = 0, columnspan = 3, sticky=W+E+N+S)
 
 		except (IOError, FileNotFoundError) as e:
 			print("Invalid File")
@@ -148,25 +169,28 @@ class CSV_File_Submit_GUI:
 	def read_file(self):
 		#Deletes match_list first so when user goes back to main menu the match_list is reset as well
 		del match_list[:]
-		self.file_name = self.file.get()
-		count = 0
-		self.counter = self.match_slider.get()
-		try:
-			with open(self.file_name, 'r') as data_file:
-				csv_data = csv.reader(data_file)
-				next(csv_data)
-				for row in csv_data:
-					if(count < self.counter):
-						match = Match(row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13], row[14])
-						match_list.append(match)
-						count += 1
-					else:
-						break
-				self.stats_gui()
+		if(self.v.get() == 0):
+			print("Select which game mode you are analyzing!")
+		else:
+			self.file_name = self.file.get()
+			count = 0
+			self.counter = self.match_slider.get()
+			try:
+				with open(self.file_name, 'r') as data_file:
+					csv_data = csv.reader(data_file)
+					next(csv_data)
+					for row in csv_data:
+						if(count < self.counter):
+							match = Match(row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13], row[14])
+							match_list.append(match)
+							count += 1
+						else:
+							break
+					self.stats_gui()
 
-		except (IOError, FileNotFoundError) as e:
-			self.file_name = None
-			print(e)
+			except (IOError, FileNotFoundError) as e:
+				self.file_name = None
+				print(e)
 
 	def stats_gui(self):
 		self.master.title("View Your Stats")
@@ -174,88 +198,169 @@ class CSV_File_Submit_GUI:
 
 		self.remove_widgets()
 		
+		#If it's competitive
+		if(self.v.get() == 1):
+			for rows in range(0, 11):
+				self.master.rowconfigure(rows, weight = 1)
+			for cols in range(0, 8):
+				self.master.columnconfigure(cols, weight = 1)
 
-		for rows in range(0, 11):
-			self.master.rowconfigure(rows, weight = 1)
-		for cols in range(0, 8):
-			self.master.columnconfigure(cols, weight = 1)
+			#Procedurally generates the captions at the top row of the table
+			horizontal_labels = ['Last ' + str(self.counter) + ' Matches', ' De_Mirage ', 'De_Inferno', '  De_Nuke  ', 'De_Overpass', ' De_Train ', 'De_Dust II', ' De_Cache ']
+			counter = 0
+			for label in horizontal_labels:
+				caption = Label(self.master, text = label, bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+				caption.grid(row = 0, column = counter, columnspan = 1, sticky=W+E+N+S)
+				counter += 1
 
-		#Procedurally generates the captions at the top row of the table
-		horizontal_labels = ['Last ' + str(self.counter) + ' Matches', ' De_Mirage ', 'De_Inferno', '  De_Nuke  ', 'De_Overpass', ' De_Train ', 'De_Dust II', ' De_Cache ']
-		counter = 0
-		for label in horizontal_labels:
-			caption = Label(self.master, text = label, bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
-			caption.grid(row = 0, column = counter, columnspan = 1, sticky=W+E+N+S)
-			counter += 1
+			#Procedurally generates the captions at the first column of the table, skipping the first one because it was generated in the previous lines
+			vertical_labels = ['Average Kills', 'Average Deaths', 'K-D Ratio', 'Map Played Frequency', 'Map Winrate %', 'Average Headshot %', 'Average MVPs/Game']
+			counter = 1
+			for label in vertical_labels:
+				caption = Label(self.master, text = label, bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+				caption.grid(row = counter, column = 0, columnspan = 1, sticky=W+E+N+S)
+				counter +=1
 
-		#Procedurally generates the captions at the first column of the table, skipping the first one because it was generated in the previous lines
-		vertical_labels = ['Average Kills', 'Average Deaths', 'K-D Ratio', 'Map Played Frequency', 'Map Winrate %', 'Average Headshot %', 'Average MVPs/Game']
-		counter = 1
-		for label in vertical_labels:
-			caption = Label(self.master, text = label, bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
-			caption.grid(row = counter, column = 0, columnspan = 1, sticky=W+E+N+S)
-			counter +=1
+			all_match_stats = kda_table(self.v.get())
+			all_match_stats_keys = list(all_match_stats.keys())
 
-		all_match_stats = kda_table()
-		all_match_stats_keys = list(all_match_stats.keys())
+			i = 0
+			for key in all_match_stats_keys:
+				if(all_match_stats[key]['Matches Played'] == '-'):
+					kill_label = Label(self.master, text = '-' , font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					kill_label.grid(row = 1, column = i + 1, sticky=W+E+N+S)
+					death_label = Label(self.master, text = '-', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					death_label.grid(row = 2, column = i + 1, sticky=W+E+N+S)
+					kd_label = Label(self.master, text = '-', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					kd_label.grid(row = 3, column = i + 1, sticky=W+E+N+S)
+					map_played_label = Label(self.master, text = '0', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					map_played_label.grid(row = 4, column = i + 1, sticky=W+E+N+S)
+					winrate_label = Label(self.master, text = '-', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					winrate_label.grid(row = 5, column = i + 1, sticky=W+E+N+S)
+					hsp_label = Label(self.master, text = '-', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					hsp_label.grid(row = 6, column = i + 1, sticky=W+E+N+S)
+					mvp_label = Label(self.master, text = '-', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					mvp_label.grid(row = 7, column = i + 1, sticky=W+E+N+S)
+					i += 1
+				else:
+					kill_label = Label(self.master, text = str(round(all_match_stats[key]['Total Kills']/all_match_stats[key]['Matches Played'], 2)) , font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					kill_label.grid(row = 1, column = i + 1, sticky=W+E+N+S)
+					death_label = Label(self.master, text = str(round(all_match_stats[key]['Total Deaths']/all_match_stats[key]['Matches Played'], 2)), font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					death_label.grid(row = 2, column = i + 1, sticky=W+E+N+S)
+					kd_label = Label(self.master, text = str(all_match_stats[key]['KD Ratio']), font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					kd_label.grid(row = 3, column = i + 1, sticky=W+E+N+S)
+					map_played_label = Label(self.master, text = str(round(100*all_match_stats[key]['Matches Played']/self.counter, 2))+'%', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					map_played_label.grid(row = 4, column = i + 1, sticky=W+E+N+S)
+					winrate_label = Label(self.master, text = str(round(100*all_match_stats[key]['Wins']/all_match_stats[key]['Matches Played'], 2)) + '%', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					winrate_label.grid(row = 5, column = i + 1, sticky=W+E+N+S)
+					hsp_label = Label(self.master, text = str(round(100*all_match_stats[key]['Headshot Kills']/all_match_stats[key]['Total Kills'], 2)) + '%', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					hsp_label.grid(row = 6, column = i + 1, sticky=W+E+N+S)
+					mvp_label = Label(self.master, text =str(round(all_match_stats[key]['MVP Count']/all_match_stats[key]['Matches Played'], 2)), font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					mvp_label.grid(row = 7, column = i + 1, sticky=W+E+N+S)
+					i += 1
+			self.button_label = Label(self.master, text = 'Data Visualization Options', bg = '#1A39B1', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+			self.button_label.grid(row=8, column = 0, columnspan = 8, sticky=W+E+N+S)
 
-		i = 0
-		for key in all_match_stats_keys:
-			if(all_match_stats[key]['Matches Played'] == '-'):
-				kill_label = Label(self.master, text = '-' , font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
-				kill_label.grid(row = 1, column = i + 1, sticky=W+E+N+S)
-				death_label = Label(self.master, text = '-', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
-				death_label.grid(row = 2, column = i + 1, sticky=W+E+N+S)
-				kd_label = Label(self.master, text = '-', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
-				kd_label.grid(row = 3, column = i + 1, sticky=W+E+N+S)
-				map_played_label = Label(self.master, text = '0', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
-				map_played_label.grid(row = 4, column = i + 1, sticky=W+E+N+S)
-				winrate_label = Label(self.master, text = '-', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
-				winrate_label.grid(row = 5, column = i + 1, sticky=W+E+N+S)
-				hsp_label = Label(self.master, text = '-', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
-				hsp_label.grid(row = 6, column = i + 1, sticky=W+E+N+S)
-				mvp_label = Label(self.master, text = '-', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
-				mvp_label.grid(row = 7, column = i + 1, sticky=W+E+N+S)
-				i += 1
-			else:
-				kill_label = Label(self.master, text = str(round(all_match_stats[key]['Total Kills']/all_match_stats[key]['Matches Played'], 2)) , font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
-				kill_label.grid(row = 1, column = i + 1, sticky=W+E+N+S)
-				death_label = Label(self.master, text = str(round(all_match_stats[key]['Total Deaths']/all_match_stats[key]['Matches Played'], 2)), font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
-				death_label.grid(row = 2, column = i + 1, sticky=W+E+N+S)
-				kd_label = Label(self.master, text = str(all_match_stats[key]['KD Ratio']), font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
-				kd_label.grid(row = 3, column = i + 1, sticky=W+E+N+S)
-				map_played_label = Label(self.master, text = str(round(100*all_match_stats[key]['Matches Played']/self.counter, 2))+'%', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
-				map_played_label.grid(row = 4, column = i + 1, sticky=W+E+N+S)
-				winrate_label = Label(self.master, text = str(round(100*all_match_stats[key]['Wins']/all_match_stats[key]['Matches Played'], 2)) + '%', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
-				winrate_label.grid(row = 5, column = i + 1, sticky=W+E+N+S)
-				hsp_label = Label(self.master, text = str(round(100*all_match_stats[key]['Headshot Kills']/all_match_stats[key]['Total Kills'], 2)) + '%', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
-				hsp_label.grid(row = 6, column = i + 1, sticky=W+E+N+S)
-				mvp_label = Label(self.master, text =str(round(all_match_stats[key]['MVP Count']/all_match_stats[key]['Matches Played'], 2)), font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
-				mvp_label.grid(row = 7, column = i + 1, sticky=W+E+N+S)
-				i += 1
-		self.button_label = Label(self.master, text = 'Data Visualization Options', bg = '#1A39B1', fg = '#d7e1f2', font = 'Helvetica 11 bold')
-		self.button_label.grid(row=8, column = 0, columnspan = 8, sticky=W+E+N+S)
+			self.pie_button = Button(self.master, text = 'Pie Chart: Maps Played Distribution', command = lambda: pie_chart_maps_played(all_match_stats),
+										 relief = 'raised', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
+			self.pie_button.grid(row = 9, column = 0, columnspan = 2, sticky=W+E+N+S)
 
-		self.pie_button = Button(self.master, text = 'Pie Chart: Maps Played Distribution', command = lambda: pie_chart_maps_played(all_match_stats),
-									 relief = 'raised', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
-		self.pie_button.grid(row = 9, column = 0, columnspan = 2, sticky=W+E+N+S)
+			self.map_win_pct_button = Button(self.master, text = 'Bar Graph: Map Winrate %', command = lambda: bar_graph_maps_win_pct(all_match_stats),
+										 relief = 'raised', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
+			self.map_win_pct_button.grid(row = 9, column = 2, columnspan = 2, sticky=W+E+N+S)
 
-		self.map_win_pct_button = Button(self.master, text = 'Bar Graph: Map Winrate %', command = lambda: bar_graph_maps_win_pct(all_match_stats),
-									 relief = 'raised', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
-		self.map_win_pct_button.grid(row = 9, column = 2, columnspan = 2, sticky=W+E+N+S)
+			self.avg_kills_and_deaths_button = Button(self.master, text = 'Bar Graph: Average K-D Per Map', command = lambda: avg_kills_deaths_per_map(all_match_stats),
+										 				relief = 'raised', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
+			self.avg_kills_and_deaths_button.grid(row = 9, column = 4, columnspan = 2, sticky=W+E+N+S)
 
-		self.avg_kills_and_deaths_button = Button(self.master, text = 'Bar Graph: Average K-D Per Map', command = lambda: avg_kills_deaths_per_map(all_match_stats),
-									 				relief = 'raised', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
-		self.avg_kills_and_deaths_button.grid(row = 9, column = 4, columnspan = 2, sticky=W+E+N+S)
+			self.avg_hsp_button = Button(self.master, text = 'Bar Graph: Average HS % Per Map', command = lambda: avg_hsp_per_map(all_match_stats),
+										 				relief = 'raised', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
+			self.avg_hsp_button.grid(row = 9, column = 6, columnspan = 2, sticky=W+E+N+S)
 
-		self.avg_hsp_button = Button(self.master, text = 'Bar Graph: Average HS % Per Map', command = lambda: avg_hsp_per_map(all_match_stats),
-									 				relief = 'raised', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
-		self.avg_hsp_button.grid(row = 9, column = 6, columnspan = 2, sticky=W+E+N+S)
+			self.main_menu_button = Button(self.master, text = 'Back to Main Menu', command = lambda: self.back_to_main_menu(self.master, all_match_stats),
+										 				relief = 'raised', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
+			self.main_menu_button.grid(row = 10, column = 0, columnspan = 8, sticky=W+E+N+S)
+		else:
+			for rows in range(0, 11):
+				self.master.rowconfigure(rows, weight = 1)
+			for cols in range(0, 10):
+				self.master.columnconfigure(cols, weight = 1)
 
-		self.main_menu_button = Button(self.master, text = 'Back to Main Menu', command = lambda: self.back_to_main_menu(self.master, all_match_stats),
-									 				relief = 'raised', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
-		self.main_menu_button.grid(row = 10, column = 0, columnspan = 8, sticky=W+E+N+S)
+			#Procedurally generates the captions at the top row of the table
+			horizontal_labels = ['Last ' + str(self.counter) + ' Matches', ' Train ', 'Shortdust', '  Lake  ', 'Rialto', 'St.Marc', ' Cobblestone ', 'Inferno', 'Shortnuke', 'Bank']
+			counter = 0
+			for label in horizontal_labels:
+				caption = Label(self.master, text = label, bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+				caption.grid(row = 0, column = counter, columnspan = 1, sticky=W+E+N+S)
+				counter += 1
 
+			#Procedurally generates the captions at the first column of the table, skipping the first one because it was generated in the previous lines
+			vertical_labels = ['Average Kills', 'Average Deaths', 'K-D Ratio', 'Map Played Frequency', 'Map Winrate %', 'Average Headshot %', 'Average MVPs/Game']
+			counter = 1
+			for label in vertical_labels:
+				caption = Label(self.master, text = label, bg = '#003b46', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+				caption.grid(row = counter, column = 0, columnspan = 1, sticky=W+E+N+S)
+				counter +=1
+
+			all_match_stats = kda_table(self.v.get())
+			all_match_stats_keys = list(all_match_stats.keys())
+
+			i = 0
+			for key in all_match_stats_keys:
+				if(all_match_stats[key]['Matches Played'] == '-'):
+					kill_label = Label(self.master, text = '-' , font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					kill_label.grid(row = 1, column = i + 1, sticky=W+E+N+S)
+					death_label = Label(self.master, text = '-', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					death_label.grid(row = 2, column = i + 1, sticky=W+E+N+S)
+					kd_label = Label(self.master, text = '-', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					kd_label.grid(row = 3, column = i + 1, sticky=W+E+N+S)
+					map_played_label = Label(self.master, text = '0', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					map_played_label.grid(row = 4, column = i + 1, sticky=W+E+N+S)
+					winrate_label = Label(self.master, text = '-', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					winrate_label.grid(row = 5, column = i + 1, sticky=W+E+N+S)
+					hsp_label = Label(self.master, text = '-', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					hsp_label.grid(row = 6, column = i + 1, sticky=W+E+N+S)
+					mvp_label = Label(self.master, text = '-', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					mvp_label.grid(row = 7, column = i + 1, sticky=W+E+N+S)
+					i += 1
+				else:
+					kill_label = Label(self.master, text = str(round(all_match_stats[key]['Total Kills']/all_match_stats[key]['Matches Played'], 2)) , font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					kill_label.grid(row = 1, column = i + 1, sticky=W+E+N+S)
+					death_label = Label(self.master, text = str(round(all_match_stats[key]['Total Deaths']/all_match_stats[key]['Matches Played'], 2)), font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					death_label.grid(row = 2, column = i + 1, sticky=W+E+N+S)
+					kd_label = Label(self.master, text = str(all_match_stats[key]['KD Ratio']), font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					kd_label.grid(row = 3, column = i + 1, sticky=W+E+N+S)
+					map_played_label = Label(self.master, text = str(round(100*all_match_stats[key]['Matches Played']/self.counter, 2))+'%', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					map_played_label.grid(row = 4, column = i + 1, sticky=W+E+N+S)
+					winrate_label = Label(self.master, text = str(round(100*all_match_stats[key]['Wins']/all_match_stats[key]['Matches Played'], 2)) + '%', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					winrate_label.grid(row = 5, column = i + 1, sticky=W+E+N+S)
+					hsp_label = Label(self.master, text = str(round(100*all_match_stats[key]['Headshot Kills']/all_match_stats[key]['Total Kills'], 2)) + '%', font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					hsp_label.grid(row = 6, column = i + 1, sticky=W+E+N+S)
+					mvp_label = Label(self.master, text =str(round(all_match_stats[key]['MVP Count']/all_match_stats[key]['Matches Played'], 2)), font = 'Helvetica 11', borderwidth = 1, relief = 'solid')
+					mvp_label.grid(row = 7, column = i + 1, sticky=W+E+N+S)
+					i += 1
+			self.button_label = Label(self.master, text = 'Data Visualization Options', bg = '#1A39B1', fg = '#d7e1f2', font = 'Helvetica 11 bold')
+			self.button_label.grid(row=8, column = 0, columnspan = 10, sticky=W+E+N+S)
+
+			self.pie_button = Button(self.master, text = 'Pie Chart: Maps Played Distribution', command = lambda: pie_chart_maps_played(all_match_stats),
+										 relief = 'raised', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
+			self.pie_button.grid(row = 9, column = 0, columnspan = 3, sticky=W+E+N+S)
+
+			self.map_win_pct_button = Button(self.master, text = 'Bar Graph: Map Winrate %', command = lambda: bar_graph_maps_win_pct(all_match_stats),
+										 relief = 'raised', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
+			self.map_win_pct_button.grid(row = 9, column = 3, columnspan = 2, sticky=W+E+N+S)
+
+			self.avg_kills_and_deaths_button = Button(self.master, text = 'Bar Graph: Average K-D Per Map', command = lambda: avg_kills_deaths_per_map(all_match_stats),
+										 				relief = 'raised', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
+			self.avg_kills_and_deaths_button.grid(row = 9, column = 5, columnspan = 2, sticky=W+E+N+S)
+
+			self.avg_hsp_button = Button(self.master, text = 'Bar Graph: Average HS % Per Map', command = lambda: avg_hsp_per_map(all_match_stats),
+										 				relief = 'raised', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
+			self.avg_hsp_button.grid(row = 9, column = 7, columnspan = 3, sticky=W+E+N+S)
+
+			self.main_menu_button = Button(self.master, text = 'Back to Main Menu', command = lambda: self.back_to_main_menu(self.master, all_match_stats),
+										 				relief = 'raised', borderwidth = 3, bg = '#c4dfe6', fg = '#07575b', font = 'Helvetica 11 bold')
+			self.main_menu_button.grid(row = 10, column = 0, columnspan = 10, sticky=W+E+N+S)
 
 	def remove_widgets(self):
 		for widget in self.master.grid_slaves():
@@ -269,7 +374,7 @@ class CSV_File_Submit_GUI:
 #                                      #
 ########################################
 
-def pie_chart_maps_played(all_match_stats):
+def pie_chart_maps_played(all_match_stats): 
 	sizes = []
 	sorted_label_list = []
 	fig1, ax1 = plt.subplots()
@@ -378,19 +483,19 @@ def safe_division(x, y):
 
 #Helper function for KDA Table
 def match_info_parser(dict,  match):
-	dict['De_' + match.map.strip()]['Total Kills'] += int(match.kills)
-	dict['De_' + match.map.strip()]['Total Deaths'] += int(match.deaths)
-	dict['De_' + match.map.strip()]['Matches Played'] += 1
-	dict['De_' + match.map.strip()]['Headshot Kills'] += round(int(match.kills) * 0.01 * int(match.hsp))
-	dict['De_' + match.map.strip()]['MVP Count'] += int(match.mvps)
-	dict['De_' + match.map.strip()]['Total Rounds For'] += int(match.rounds_for)
-	dict['De_' + match.map.strip()]['Total Rounds Against'] += int(match.rounds_against)
+	dict[match.map.strip()]['Total Kills'] += int(match.kills)
+	dict[match.map.strip()]['Total Deaths'] += int(match.deaths)
+	dict[match.map.strip()]['Matches Played'] += 1
+	dict[match.map.strip()]['Headshot Kills'] += round(int(match.kills) * 0.01 * int(match.hsp))
+	dict[match.map.strip()]['MVP Count'] += int(match.mvps)
+	dict[match.map.strip()]['Total Rounds For'] += int(match.rounds_for)
+	dict[match.map.strip()]['Total Rounds Against'] += int(match.rounds_against)
 	if(int(match.rounds_for) > int(match.rounds_against)):
-		dict['De_' + match.map.strip()]['Wins'] += 1
+		dict[match.map.strip()]['Wins'] += 1
 	elif(int(match.rounds_for) == int(match.rounds_against)):
-		dict['De_' + match.map.strip()]['Ties'] += 1
+		dict[match.map.strip()]['Ties'] += 1
 	else:
-		dict['De_' + match.map.strip()]['Losses'] += 1
+		dict[match.map.strip()]['Losses'] += 1
 
 ########################################################################################################################################
 #  Purpose: Trawls through matches in match_list and gets statistics for each map in the competitive map pool                          #
@@ -398,23 +503,30 @@ def match_info_parser(dict,  match):
 #  Returns: A dictionary that has keys for each map, which point to a sub-dictionary that has keys for kills, deaths, K-D ratio etc    #
 ########################################################################################################################################
 
-def kda_table():
-	active_duty_map_list = ['Mirage', 'Inferno', 'Nuke', 'Overpass', 'Train', 'Dust II', 'Cache']
-	retval = {
-		'De_Mirage': {'Total Kills': 0, 'Total Deaths': 0, 'KD Ratio': 0, 'Matches Played': 0, 'Headshot Kills': 0, 'MVP Count': 0, 'Total Rounds For': 0, 'Total Rounds Against': 0, 'Wins': 0, 'Ties': 0, 'Losses': 0},
-		'De_Inferno': {'Total Kills': 0, 'Total Deaths': 0, 'KD Ratio': 0, 'Matches Played': 0, 'Headshot Kills': 0, 'MVP Count': 0, 'Total Rounds For': 0, 'Total Rounds Against': 0, 'Wins': 0, 'Ties': 0, 'Losses': 0},
-		'De_Nuke': {'Total Kills': 0, 'Total Deaths': 0, 'KD Ratio': 0, 'Matches Played': 0, 'Headshot Kills': 0, 'MVP Count': 0, 'Total Rounds For': 0, 'Total Rounds Against': 0, 'Wins': 0, 'Ties': 0, 'Losses': 0},
-		'De_Overpass': {'Total Kills': 0, 'Total Deaths': 0, 'KD Ratio': 0, 'Matches Played': 0, 'Headshot Kills': 0, 'MVP Count': 0,  'Total Rounds For': 0, 'Total Rounds Against': 0, 'Wins': 0, 'Ties': 0, 'Losses': 0},
-		'De_Train': {'Total Kills': 0, 'Total Deaths': 0, 'KD Ratio': 0, 'Matches Played': 0, 'Headshot Kills': 0, 'MVP Count': 0, 'Total Rounds For': 0, 'Total Rounds Against': 0, 'Wins': 0, 'Ties': 0, 'Losses': 0},
-		'De_Dust II': {'Total Kills': 0, 'Total Deaths': 0, 'KD Ratio': 0, 'Matches Played': 0, 'Headshot Kills': 0, 'MVP Count': 0, 'Total Rounds For': 0, 'Total Rounds Against': 0, 'Wins': 0, 'Ties': 0, 'Losses': 0},
-		'De_Cache': {'Total Kills': 0, 'Total Deaths': 0, 'KD Ratio': 0, 'Matches Played': 0, 'Headshot Kills': 0, 'MVP Count': 0, 'Total Rounds For': 0, 'Total Rounds Against': 0, 'Wins': 0, 'Ties': 0, 'Losses': 0},
-	}
+def kda_table(num):
+	if(num == 1):
+		active_duty_map_list = ['Mirage', 'Inferno', 'Nuke', 'Overpass', 'Train', 'Dust II', 'Cache']
+		retval = {}
+		for map_name in active_duty_map_list:
+			retval[map_name] = {'Total Kills': 0, 'Total Deaths': 0, 'KD Ratio': 0, 'Matches Played': 0, 'Headshot Kills': 0, 'MVP Count': 0, 'Total Rounds For': 0, 'Total Rounds Against': 0, 'Wins': 0, 'Ties': 0, 'Losses': 0}
 
-	for match in match_list:
-		if(match.map.strip() not in active_duty_map_list):
-			pass
-		else:
-			match_info_parser(retval, match)
+		for match in match_list:
+			if(match.map.strip() not in active_duty_map_list):
+				pass
+			else:
+				match_info_parser(retval, match)
+
+	else:
+		wingman_map_list = ['Train', 'Shortdust', 'Lake', 'Rialto', 'St. Marc', 'Cobblestone', 'Inferno', 'Shortnuke', 'Bank']
+		retval = {}
+		for map_name in wingman_map_list:
+			retval[map_name] = {'Total Kills': 0, 'Total Deaths': 0, 'KD Ratio': 0, 'Matches Played': 0, 'Headshot Kills': 0, 'MVP Count': 0, 'Total Rounds For': 0, 'Total Rounds Against': 0, 'Wins': 0, 'Ties': 0, 'Losses': 0}
+
+		for match in match_list:
+			if(match.map.strip() not in wingman_map_list):
+				pass
+			else:
+				match_info_parser(retval, match)
 
 	for map_name in list(retval.keys()):
 		if(retval[map_name]['Matches Played'] == 0):
