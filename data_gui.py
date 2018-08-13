@@ -146,7 +146,7 @@ class CSV_File_Submit_GUI:
 
 	def browse(self):
 		#global csv_entry_menu, file
-		self.master.filename = filedialog.askopenfilename(initialdir = "C:/Users/Mike/Documents/wingman-data-scraper", title = "Select file", filetypes = (("csv files (.csv)","*.csv"),("all files","*.*")))
+		self.master.filename = filedialog.askopenfilename(initialdir = "/", title = "Select file", filetypes = (("csv files (.csv)","*.csv"),("all files","*.*")))
 		self.file.delete(0,END)
 		self.file.insert(0, self.master.filename)
 		self.counter = 0
